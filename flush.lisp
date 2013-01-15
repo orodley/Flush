@@ -6,11 +6,14 @@
 
 (in-package :flush)
 
+(defvar *var-table* (make-hash-table)
+  "Holds all builtin flush functions and variables")
+
 (defun tokenize (code)
   "Break code string into a list of string tokens"
   (declare (string code))
   (cl-ppcre:all-matches-as-strings
-    "-?[\\d.]+|\".*?[^\\\\]\""
+    "-?[\\d\\.]+|\".*?[^\\\\]\"|\\w+|[^ \\t]"
     code))
 
 (defun literalp (token)
@@ -32,6 +35,11 @@
       (cond
         ((literalp token)
          (push (read-flush-literal token) stack))
+        ((char= (elt token 0) #\Newline)
+         (setf stack (nreverse stack))
+         (setf stack (list (apply (car stack) (cdr stack)))))
+        ((gethash (intern token) *var-table*)
+         (push (intern token) stack))
         (t
          (error "Unrecognized token ~S"
                 token))))
