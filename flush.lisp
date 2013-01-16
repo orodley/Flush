@@ -37,7 +37,10 @@
          (push (read-flush-literal token) stack))
         ((char= (elt token 0) #\Newline)
          (setf stack (nreverse stack))
-         (setf stack (list (apply (car stack) (cdr stack)))))
+         (setf stack (list (apply (gethash (car stack) *var-table*)
+                                  (cdr stack)))))
+        ((char= (elt token 0) #\@)
+         (setf stack (append (cdr stack) (list (car stack)))))
         ((gethash (intern token) *var-table*)
          (push (intern token) stack))
         (t
