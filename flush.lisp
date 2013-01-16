@@ -27,10 +27,10 @@
   (declare (string token))
   (read-from-string token))
 
-(defun run (code)
+(defun run (code &optional (starting-stack ()))
   "Run CODE as a flush program, returning the final stack value"
   (declare (string code))
-  (let ((stack ()))
+  (let ((stack starting-stack))
     (dolist (token (tokenize code))
       (cond
         ((literalp token)
@@ -44,6 +44,23 @@
          (error "Unrecognized token ~S"
                 token))))
     stack))
+
+(defun repl ()
+  "Start a REPL for flush. QUIT exits"
+  (loop with stack-value = ()
+        for flush-string = (progn
+                             (format t "> ")
+                             (read-line)) do
+        (if (string= flush-string "QUIT")
+          (return)
+          (let ((ending-stack
+                  (run (concatenate 'string
+                                    flush-string
+                                    (string #\Newline))
+                       stack-value))) 
+            (format t "~A~%"
+                    (reverse ending-stack))
+            (setf stack-value ending-stack)))))
 
 ;;; Export all symbols for unit testing
 (let ((flush (find-package :flush)))
