@@ -87,8 +87,7 @@
 (define-test run-calls-+-correctly
   (assert-equal
     '(3)
-    (run "+ 1 2
-          ")))
+    (run "+ 1 2;")))
 
 (define-test run-@-rotates-stack-correctly
   (assert-equal
