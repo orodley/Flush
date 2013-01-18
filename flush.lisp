@@ -13,7 +13,7 @@
   "Break code string into a list of string tokens"
   (declare (string code))
   (cl-ppcre:all-matches-as-strings
-    "-?[\\d\\.]+|\".*?[^\\\\]\"|\\w+|[^ \\t]"
+    "-?[\\d\\.]+|\".*?[^\\\\]\"|\\w+|[^ \\t\\n]"
     code))
 
 (defun literalp (token)
@@ -35,7 +35,7 @@
       (cond
         ((literalp token)
          (push (read-flush-literal token) stack))
-        ((char= (elt token 0) #\Newline)
+        ((char= (elt token 0) #\;)
          (setf stack (nreverse stack))
          (setf stack (list (apply (gethash (car stack) *var-table*)
                                   (cdr stack)))))

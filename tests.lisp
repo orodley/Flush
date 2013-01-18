@@ -5,6 +5,32 @@
 
 (in-package :flush-tests)
 
+;;; TOKENIZE tests
+(define-test tokenize-tokenizes-ints
+  (assert-equal
+    '("1" "2" "3")
+    (tokenize "1 2 3")))
+
+(define-test tokenize-tokenizes-negative-ints
+  (assert-equal
+    '("-1" "-2")
+    (tokenize "-1 -2")))
+
+(define-test tokenize-tokenizes-floats
+  (assert-equal
+    '("1.2" "3.4")
+    (tokenize "1.2 3.4")))
+
+(define-test tokenize-tokenizes-floats-with-no-leading-digit
+  (assert-equal
+    '(".1" ".2")
+    (tokenize ".1 .2")))
+
+(define-test tokenize-tokenizes-symbols-without-spaces
+  (assert-equal
+    '("+" "@")
+    (tokenize "+@")))
+
 ;;; LITERALP tests
 (define-test literalp-returns-t-for-int
   (assert-true
@@ -57,3 +83,14 @@
   (assert-equal
     '("a" 1)
     (run "1\"a\"")))
+
+(define-test run-calls-+-correctly
+  (assert-equal
+    '(3)
+    (run "+ 1 2
+          ")))
+
+(define-test run-@-rotates-stack-correctly
+  (assert-equal
+    '(2 1 3)
+    (run "1 2 3@")))

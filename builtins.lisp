@@ -11,3 +11,12 @@
 
 (define-flush-fun +
   (apply #'+ args))
+
+(define-flush-fun -
+  (apply #'- args))
+
+(define-flush-fun *
+  (apply #'* args))
+
+(define-flush-fun /
+  (apply #'/ args))
