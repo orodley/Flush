@@ -31,6 +31,16 @@
     '("+" "@")
     (tokenize "+@")))
 
+(define-test tokenize-tokenizes-lists
+  (assert-equal
+    '("( 1 2 3 )")
+    (tokenize "(1 2 3)")))
+
+(define-test tokenize-tokenizes-nested-lists
+  (assert-equal
+    '("( 1 ( 2 ( 3 4 ) ) )")
+    (tokenize "(1 (2 (3 4)))")))
+
 ;;; LITERALP tests
 (define-test literalp-returns-t-for-int
   (assert-true
@@ -52,6 +62,10 @@
   (assert-false
     (literalp "a")))
 
+(define-test literalp-returns-t-for-list
+  (assert-true
+    (literalp "()")))
+
 ;;; READ-FLUSH-LITERAL tests
 (define-test read-flush-literal-correctly-reads-int
   (assert-equal
@@ -68,6 +82,16 @@
     "a"
     (read-flush-literal "\"a\"")))
 
+(define-test read-flush-literal-correctly-reads-list
+  (assert-equal
+    '(1 2 3)
+    (read-flush-literal "(1 2 3)")))
+
+(define-test read-flush-literal-correctly-reads-nested-list
+  (assert-equal
+    '(1 (2 (3 4)))
+    (read-flush-literal "(1 (2 (3 4)))")))
+
 ;;; RUN tests
 (define-test run-pushes-int-onto-stack
   (assert-equal
@@ -78,6 +102,11 @@
   (assert-equal
     '("a")
     (run "\"a\"")))
+
+(define-test run-pushes-list-onto-stack
+  (assert-equal
+    '((1 2 3))
+    (run "(1 2 3)")))
 
 (define-test run-pushes-multiple-items-onto-stack
   (assert-equal

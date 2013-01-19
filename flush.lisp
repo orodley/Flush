@@ -10,14 +10,39 @@
 (defun tokenize (code)
   "Break code string into a list of string tokens"
   (declare (string code))
-  (cl-ppcre:all-matches-as-strings
-    "-?[\\d\\.]+|\".*?[^\\\\]\"|\\w+|[^ \\t\\n]"
-    code))
+  (let ((tokens (cl-ppcre:all-matches-as-strings
+                  "-?[\\d\\.]+|\".*?[^\\\\]\"|\\w+|[^ \\t\\n]"
+                  code)))
+    (do ((processed-tokens
+           ()
+           (cons
+             (if (string= (car tokens) "(")
+               (reduce (lambda (a b)
+                         (concatenate 'string a " " b))
+                       (loop for token = (pop tokens)
+                             with paren-count = 0
+                             collecting token 
+                             when (string= token "(")
+                               do (incf paren-count)
+                             when (string= token ")")
+                               do (decf paren-count) 
+                             until (or (zerop paren-count)
+                                       (null tokens))
+                             finally
+                             (unless (zerop paren-count) 
+                               (error "Unmatched ( in program ~S"
+                                      code))))
+               (pop tokens))
+             processed-tokens)))
+      ((not tokens) 
+       (if (find ")" processed-tokens :test #'string=)
+         (error "Unmatched ) in program ~S" code)
+         (nreverse processed-tokens))))))
 
 (defun literalp (token)
   (declare (string token))
   (let ((first-char (elt token 0)))
-    (or (member first-char '(#\- #\" #\.))
+    (or (member first-char '(#\- #\" #\. #\())
         (digit-char-p first-char))))
 
 (defun read-flush-literal (token)
@@ -42,8 +67,7 @@
         ((gethash (intern token) *var-table*)
          (push (intern token) stack))
         (t
-         (error "Unrecognized token ~S"
-                token))))
+         (error "Unrecognized token ~S" token))))
     stack))
 
 (defun repl ()
