@@ -84,10 +84,15 @@
     '("a" 1)
     (run "1\"a\"")))
 
-(define-test run-calls-+-correctly
+(define-test run-calls-function-correctly
   (assert-equal
     '(3)
     (run "+ 1 2;")))
+
+(define-test run-calls-function-correctly-with-multiple-args
+  (assert-equal
+    '(6)
+    (run "+1 2 3;")))
 
 (define-test run-@-rotates-stack-correctly
   (assert-equal

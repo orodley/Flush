@@ -1,6 +1,4 @@
 ;;;; A stack-based esoteric programming language named "flush"
-(ql:quickload 'cl-ppcre)
-
 (defpackage :flush
   (:use :common-lisp))
 
@@ -35,7 +33,7 @@
       (cond
         ((literalp token)
          (push (read-flush-literal token) stack))
-        ((char= (elt token 0) #\;)
+        ((string= token ";")
          (setf stack (nreverse stack))
          (setf stack (list (apply (gethash (car stack) *var-table*)
                                   (cdr stack)))))
