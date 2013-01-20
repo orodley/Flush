@@ -20,3 +20,9 @@
 
 (define-flush-fun /
   (apply #'/ args))
+
+(define-flush-fun %
+  (mod (car args) (cadr args)))
+
+(define-flush-fun |m|
+  (mapcar (car args) (cadr args)))
