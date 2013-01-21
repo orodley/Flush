@@ -24,5 +24,5 @@
 (define-flush-fun %
   (mod (car args) (cadr args)))
 
-(define-flush-fun |m|
+(define-flush-fun |map|
   (mapcar (car args) (cadr args)))
