@@ -13,31 +13,33 @@
   (let ((tokens (cl-ppcre:all-matches-as-strings
                   "-?[\\d\\.]+|\".*?[^\\\\]\"|\\w+|[^ \\t\\n]"
                   code)))
-    (do ((processed-tokens
-           ()
-           (cons
-             (if (string= (car tokens) "(")
-               (reduce (lambda (a b)
-                         (concatenate 'string a " " b))
-                       (loop for token = (pop tokens)
-                             with paren-count = 0
-                             collecting token 
-                             when (string= token "(")
-                               do (incf paren-count)
-                             when (string= token ")")
-                               do (decf paren-count) 
-                             until (or (zerop paren-count)
-                                       (null tokens))
-                             finally
-                             (unless (zerop paren-count) 
-                               (error "Unmatched ( in program ~S"
-                                      code))))
-               (pop tokens))
-             processed-tokens)))
-      ((not tokens) 
-       (if (find ")" processed-tokens :test #'string=)
-         (error "Unmatched ) in program ~S" code)
-         (nreverse processed-tokens))))))
+    (dolist (parens '(("(" ")") ("{" "}")) tokens)
+      (destructuring-bind (left-paren right-paren) parens
+        (do ((processed-tokens
+               ()
+               (cons
+                 (if (string= (car tokens) left-paren)
+                   (reduce (lambda (a b)
+                             (concatenate 'string a " " b))
+                           (loop for token = (pop tokens)
+                                 with paren-count = 0
+                                 collecting token 
+                                 when (string= token left-paren)
+                                 do (incf paren-count)
+                                 when (string= token right-paren)
+                                 do (decf paren-count) 
+                                 until (or (zerop paren-count)
+                                           (null tokens))
+                                 finally
+                                 (unless (zerop paren-count) 
+                                   (error "Unmatched ~A in program ~S"
+                                          left-paren code))))
+                   (pop tokens))
+                 processed-tokens)))
+          ((not tokens) 
+           (if (find right-paren processed-tokens :test #'string=)
+             (error "Unmatched ~A in program ~S" right-paren code)
+             (setf tokens (nreverse processed-tokens)))))))))
 
 (defun literalp (token)
   (declare (string token))
