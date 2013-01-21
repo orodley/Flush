@@ -123,6 +123,16 @@
     '(6)
     (run "+1 2 3;")))
 
+(define-test run-little-flush-works-with-one-function-on-stack
+  (assert-equal
+    '(3)
+    (run "+ 1 2,")))
+
+(define-test run-little-flush-works-with-multiple-functions-on-stack
+  (assert-equal
+    '(5 1 +)
+    (run "+ 1 + 2 3,")))
+
 (define-test run-@-rotates-stack-correctly
   (assert-equal
     '(2 1 3)
