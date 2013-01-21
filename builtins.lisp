@@ -26,3 +26,8 @@
 
 (define-flush-fun |map|
   (mapcar (car args) (cadr args)))
+
+(define-flush-fun |range|
+  (if (= (length args) 2)
+    (loop for n from (car args) to (cadr args) collecting n)
+    (loop for n to (car args) collecting n)))
