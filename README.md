@@ -6,12 +6,13 @@ by "flushing" the stack.
 ## Literals ##
 Literals are simply read, and pushed onto the stack, like so:
 
-    1 2 3 4        => (1 2 3 4)
-    .52 3.14 15/60 => (0.52 3.14 1/4)
-    "foo" "bar"    => ("foo" "bar")
+    1 2 3 4              => (1 2 3 4)
+    .52 3.14 15/60       => (0.52 3.14 1/4)
+    "foo" "bar"          => ("foo" "bar")
+    (1 "foo" 3.14 15/60) => ((1 "foo" 3.14 1/4))
 
-As you can see, integers, floats, rationals, and strings are
-supported types.
+As you can see, integers, floats, rationals, strings, and
+(heterogeneous) lists are supported types.
 
 Functions operate in a identical way; when not explicitly called
 they are simply pushed onto the stack:
